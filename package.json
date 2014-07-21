@@ -18,7 +18,9 @@
   },
   "main": "app.js",
   "repository": "",
-  "author": "",
+  "author": [
+    "Casey Chow <casey.chow@gmail.com"
+  ],
   "license": "",
   "devDependencies": {
     "expect.js": "^0.3.1",
