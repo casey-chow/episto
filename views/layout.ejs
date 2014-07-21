@@ -29,10 +29,11 @@
 
     <!--STYLES-->
     <link rel="stylesheet" href="/linker/styles/pure.css">
+    <link rel="stylesheet" href="/linker/styles/main.css">
     <!--STYLES END-->
   </head>
 
-  <body class="<%=body_classes%>">
+  <body class="<%if(locals.body_classes){%><%=body_classes%><%}%>">
     <%- body %>
 
 
@@ -88,6 +89,7 @@
     <!--SCRIPTS-->
     <script src="/linker/js/socket.io.js"></script>
     <script src="/linker/js/sails.io.js"></script>
+    <script src="/linker/js/lodash.js"></script>
     <script src="/linker/js/zepto.js"></script>
     <script src="/linker/js/app.js"></script>
     <script src="/linker/js/recordrtc.js"></script>

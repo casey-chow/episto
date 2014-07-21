@@ -53,6 +53,7 @@ module.exports = function (grunt) {
     // then beef it up with some convenience logic for talking to Sails.js
     'linker/js/sails.io.js',
 
+    'linker/js/lodash.js',
     'linker/js/zepto.js',
 
     // the file needed to record stuff in the browser
