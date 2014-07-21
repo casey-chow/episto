@@ -55,6 +55,9 @@ module.exports = function (grunt) {
 
     'linker/js/zepto.js',
 
+    // the file needed to record stuff in the browser
+    'link/js/recordrtc.js',
+
     // A simpler boilerplate library for getting you up and running w/ an
     // automatic listener for incoming messages from Socket.io.
     'linker/js/app.js',
