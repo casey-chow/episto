@@ -7,65 +7,44 @@
  * Feel free to change none, some, or ALL of this file to fit your needs!
  */
 
+console.log('Connecting to Sails.js...');
+var socket = io.connect();
 
-(function (io) {
+var $startRecording = $('#start-recording');
+var $stopRecording = $('#stop-recording');
 
-  // as soon as this file is loaded, connect automatically, 
-  var socket = io.connect();
-  if (typeof console !== 'undefined') {
-    log('Connecting to Sails.js...');
-  }
+var startStream = function() {
+  $startRecording.prop('disabled', true);
+  navigator.getUserMedia({audio: true, video: true }, function(stream) {
+    recordAudio = RecordRTC(stream, { bufferSize: 16384 });
 
-  socket.on('connect', function socketConnected() {
+    recordAudio.startRecording();
 
-    // Listen for Comet messages from Sails
-    socket.on('message', function messageReceived(message) {
+    $stopRecording.prop('disabled', false);
+  }, console.log /* for error handling */);
 
-      ///////////////////////////////////////////////////////////
-      // Replace the following with your own custom logic
-      // to run when a new message arrives from the Sails.js
-      // server.
-      ///////////////////////////////////////////////////////////
-      log('New comet message received :: ', message);
-      //////////////////////////////////////////////////////
+  return false;
+};
 
-    });
+var stopStream = function() {
+  $stopRecording.prop('disabled', true);
 
+  recordAudio.stopRecording();
 
-    ///////////////////////////////////////////////////////////
-    // Here's where you'll want to add any custom logic for
-    // when the browser establishes its socket connection to 
-    // the Sails.js server.
-    ///////////////////////////////////////////////////////////
-    log(
-        'Socket is now connected and globally accessible as `socket`.\n' + 
-        'e.g. to send a GET request to Sails, try \n' + 
-        '`socket.get("/", function (response) ' +
-        '{ console.log(response); })`'
-    );
-    ///////////////////////////////////////////////////////////
-
-
+  recordAudio.getDataURL(function(audioDataURL) {
+    console.log('this' + audioDataURL);
+    socket.post('/recordings', { url: audioDataURL });
   });
 
+  $startRecording.prop('disabled', false);
 
-  // Expose connected `socket` instance globally so that it's easy
-  // to experiment with from the browser console while prototyping.
-  window.socket = socket;
+  return false;
+};
 
+socket.on('connect', function socketConnected() {
 
-  // Simple log function to keep the example simple
-  function log () {
-    if (typeof console !== 'undefined') {
-      console.log.apply(console, arguments);
-    }
-  }
-  
+  $startRecording.click(startStream);
+  $stopRecording.click(stopStream);
 
-})(
+});
 
-  // In case you're wrapping socket.io to prevent pollution of the global namespace,
-  // you can replace `window.io` with your own `io` here:
-  window.io
-
-);
