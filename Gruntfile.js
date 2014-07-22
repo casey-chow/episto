@@ -17,11 +17,21 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-bower-task');
   grunt.loadNpmTasks('grunt-mincer');
+  grunt.loadNpmTasks('grunt-shell');
 
   // Project configuration.
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
+
+    shell: {
+      run: {
+        command: 'node app.js'
+      },
+      dev: {
+        command: 'node ./node_modules/nodemon/bin/nodemon.js app.js'
+      }
+    },
 
     /** 
      * Bower
@@ -186,4 +196,7 @@ module.exports = function (grunt) {
   grunt.registerTask('test', [ 'mochaTest' ]);
   grunt.registerTask('spec', [ 'mochaTest' ]);
 
+  // Running Sails itself
+  grunt.registerTask('run', ['shell:run']);
+  grunt.registerTask('dev', ['shell:dev']);
 };
