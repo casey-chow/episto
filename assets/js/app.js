@@ -5,7 +5,7 @@
  *
  *=require zepto
  *=require lodash
- *=require socket-io
+ *=require socket.io
  *=require sails.io
  */
 
