@@ -1,0 +1,13 @@
+/**
+ * app.css
+ *
+ * This is the main file for common styles.
+ *
+ *=require pure
+ */
+
+ .centered-content {
+	display: table;
+	margin: 0 auto;
+	width: 75%;
+}
