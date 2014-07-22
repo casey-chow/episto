@@ -5,6 +5,8 @@
     "zepto": "~1.1.4",
     "lodash": "~2.4.1",
     "recordrtc": "http://cdn.WebRTC-Experiment.com/RecordRTC.js",
-    "pure": "~0.5.0"
+    "pure": "~0.5.0",
+    "q": "https://raw.githubusercontent.com/kriskowal/q/v1/q.js",
+    "stapes": "~0.8.1"
   }
 }
