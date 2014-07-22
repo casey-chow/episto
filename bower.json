@@ -5,8 +5,6 @@
     "zepto": "~1.1.4",
     "lodash": "~2.4.1",
     "recordrtc": "http://cdn.WebRTC-Experiment.com/RecordRTC.js",
-    "pure": "~0.5.0",
-    "socket-io": "https://cdn.socket.io/socket.io-1.0.6.js",
-    "sails.io.js": "~0.10.1"
+    "pure": "~0.5.0"
   }
 }
