@@ -27,8 +27,6 @@
       var self = this;
       socket.on('connect', function() {
         self.emit('connect');
-        
-        console.log("Socket Connected");
       });
 
       $(document).ready(function() {
