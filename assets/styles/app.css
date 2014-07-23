@@ -5,3 +5,9 @@
  *
  *=require pure
  */
+
+ .centered-content {
+	display: table;
+	margin: 0 auto;
+	width: 75%;
+}

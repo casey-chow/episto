@@ -7,7 +7,6 @@
 
 module.exports = function (grunt) {
 
-
   // Get path to core grunt dependencies from Sails
   var depsPath = grunt.option('gdsrc') || 'node_modules/sails/node_modules';
   grunt.loadTasks(depsPath + '/grunt-contrib-clean/tasks');
@@ -16,6 +15,7 @@ module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-bower-task');
+  grunt.loadNpmTasks('grunt-npm-install');
   grunt.loadNpmTasks('grunt-mincer');
   grunt.loadNpmTasks('grunt-shell');
 
@@ -23,6 +23,7 @@ module.exports = function (grunt) {
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
+
 
     shell: {
       run: {
@@ -48,7 +49,7 @@ module.exports = function (grunt) {
           verbose: true,
           cleanTargetDir: true,
           bowerOptions: {
-            production: false
+            production: process.env.NODE_ENV === 'production'
           }
         }
       }
@@ -73,11 +74,14 @@ module.exports = function (grunt) {
             }
           }
         },
+        // Javascript is collected only on the top level to allow for ordering control.
+        // The exception is the index.js file, which is always loaded.
         files: [{
-          expand: true,
-          cwd: 'assets/',
-          src: ["js/*.js", "styles/*.css"],
-          dest: '.tmp/public/'
+          src: ['assets/js/*.js', 'assets/js/*.coffee', 'assets/js/**/index.js', 'assets/js/**/index.coffee'],
+          dest: '.tmp/public/app.js'
+        }, {
+          src: ['assets/styles/**/*.css', 'assets/styles/**/*.styl'],
+          dest: '.tmp/public/app.css'
         }]
       },
 
@@ -155,7 +159,7 @@ module.exports = function (grunt) {
         files: ['assets/**/*'],
 
         // When assets are changed:
-        tasks: ['compileAssets']
+        tasks: ['compile']
       }
     }
   });
@@ -168,14 +172,19 @@ module.exports = function (grunt) {
 
   // When Sails is lifted:
   grunt.registerTask('default', [
+    'install',
     'compile',
     'watch'
+  ]);
+
+  grunt.registerTask('install', [
+    'bower:install',
+    'npm-install'
   ]);
 
   // A single generic task to do everything you need with assets.
   grunt.registerTask('compile', [
     'clean:dev',
-    'bower:install',
     'mince:dev',
     'copy:dev'   
   ]);
@@ -190,7 +199,7 @@ module.exports = function (grunt) {
   ]);
 
   // When sails is lifted in production
-  grunt.registerTask('prod', [ 'compileAssets' ]);
+  grunt.registerTask('prod', [ 'compile' ]);
 
   // Testing Stuff
   grunt.registerTask('test', [ 'mochaTest' ]);

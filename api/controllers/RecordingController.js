@@ -24,9 +24,7 @@ module.exports = {
   _config: {},
 
   new: function(req, res) {
-    res.view({
-      body_classes: "new-recording"
-    });
+    res.view();
   },
 
   index: function(req, res) {
