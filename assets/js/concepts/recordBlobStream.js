@@ -4,85 +4,141 @@
  * @overview 
  * This file only concerns the stream-recording concept page.
  * Given an audio stream, this demo will record the streams in 2-sceond segments
- * and sent them to the server via
+ * and sent them to the server via socket.io.
  *
- *=require zepto
- *=require lodash
- *=require socket.io
- *=require sails.io
+ *= require zepto
+ *= require lodash
+ *= require socket.io
+ *= require sails.io
+ *= require q
+ *= require recordrtc
  */
 
-$(function recordBlobStream() {
+(function conceptRecordStreamContinousBlobs() {
+
   if (!$("#attr").hasClass("stream-recording")) { return; }
 
-  console.log("Stream recording code activated");
-
-  var $startRecording = $('#blob-stream .start-recording');
-  var $stopRecording = $('#blob-stream .stop-recording');
-  var $log = $('#blob-stream .log');
+  var $startRecording = $('#continuous-blob .start-recording');
+  var $stopRecording = $('#continuous-blob .stop-recording');
+  var $log = $('#continuous-blob .log');
   var htmlLog = _.throttle(function(msg) { $log.html(msg); }, 1000);
-  var $audioElement = $('#blob-stream .player');
+  var $audioElement = $('#continuous-blob .player');
 
-  var startStream = function() {
-    if($startRecording.hasClass("pure-button-disabled")) { return false; }
+  var streamContinousBlobsConcept = Concept.Stream.ContinousBlobs = Concept.Stream.subclass({
 
-    htmlLog('Recording');
+    /** @constructor */
+    constructor: function() {
+      Concept.Stream.prototype.constructor.call(this);
 
-    $startRecording.addClass('pure-button-disabled');
-    navigator.getUserMedia({audio: true, video: true }, function(stream) {
-      recordAudio = RecordRTC(stream, { bufferSize: 16384 });
+      console.log("[RecordStreamContinousBlobs] loading code");
 
-      recordAudio.startRecording();
+      this.bindEvents();
+    },
 
-      $stopRecording.removeClass('pure-button-disabled');
-    }, console.log /* for error handling */);
+    /** Bind all the events needed for the application. */
+    bindEvents: function() {
 
-    return false;
-  };
+      $startRecording.click(_.bind(this.onStartRecording, this));
+      $stopRecording.click(_.bind(this.onStopRecording, this));
 
-  var stopStream = function() {
-    if($stopRecording.hasClass('pure-button-disabled')) { return false; }
-
-    $stopRecording.addClass('pure-button-disabled');
-
-    recordAudio.stopRecording(function() {
-      htmlLog('Recording Finished');
-
-      recordAudio.getDataURL(function(audioDataURL) {
-
-        console.log('Audio Data: ', audioDataURL);
-        console.time('Sending Data to Server');
-        htmlLog('Sending Blob to Server');
-
-        socket.post('/concepts/stream-recording', { 
-          audio: audioDataURL,
-          type: recordAudio.getBlob().type || 'audio/wav'
-        }, function(res) {
-          console.timeEnd("Sending Data to Server");
-          console.log("Server Response:");
-          console.log(res);
-
-          $audioElement.attr('src', res.message);
-
-          htmlLog('Blob Successfully Sent');
+      this.on({
+        'connect': function() {
           htmlLog('Ready to Record');
-        });
+          $startRecording.removeClass('pure-button-disabled');
+        },
+        'recording:start': function() {
+          htmlLog('Recording');
 
+          $startRecording.addClass('pure-button-disabled');
+          $stopRecording.removeClass('pure-button-disabled');
+        },
+        'recording:chunk:start': function() {
+          console.log('[RecordStreamContinousBlobs] Recording New Chunk');
+        },
+        'recording:chunk:stop': function() {
+          console.log('[RecordStreamContinousBlobs] Recording Stopped');
+        },
+        'upload:chunk:start': function(audioDataURL) {
+          console.log('[RecordStreamContinousBlobs] Uploading Chunk:', audioDataURL);
+          console.time('[RecordStreamContinousBlobs] Sending Chunk to Server');
+        },
+        'upload:chunk:complete': function() {
+          console.timeEnd('[RecordStreamContinousBlobs] Sending Chunk to Server');
+        },
+        'recording:stop': function() {
+          htmlLog('Recording Finished');
+          $stopRecording.addClass('pure-button-disabled');
+        },
+        'upload:start': function(audioDataURL) {
+          console.log('[RecordStreamContinousBlobs] Audio Data: ', audioDataURL);
+          console.time('[RecordStreamContinousBlobs] Sending Data to Server');
+          htmlLog('Sending Blob to Server');
+        },
+        'upload:complete': function(res) {
+          console.timeEnd("[RecordStreamContinousBlobs] Sending Data to Server");
+          console.log("[RecordStreamContinousBlobs] Server Response:", res);
+
+          htmlLog('[RecordStreamContinousBlobs] Blob Successfully Sent');
+          htmlLog('[RecordStreamContinousBlobs] Ready to Record');
+        }
       });
+    },
 
-      $startRecording.removeClass('pure-button-disabled');
-    });
+    /** Callback binding for the ending of the recording. */
+    onStartRecording: function() {
+      if($startRecording.hasClass("pure-button-disabled")) { return false; }
 
-    return false;
-  };
+      this.emit('recording:start');
+      this.chunks = [];
+      console.log(this.chunks);
+      this._startRecording()
+      .delay(500).then(_.bind(this.onChunk, this));
+      return false;
+    },
 
-  socket.on('connect', function socketConnected() {
+    onChunk: function() {
+      var self = this;
 
-    $startRecording.click(startStream);
-    $stopRecording.click(stopStream);
-    console.log("Socket Connected");
-    htmlLog('Ready to Record');
+      return this._stopRecording()
+      .then(function() {
+
+        self.emit('recording:chunk:stop');
+        return self._getRecordingDataURL();
+
+      }).then(function(audioDataURL) {
+
+        self.emit('upload:chunk:start', audioDataURL);
+        console.log(self.chunks);
+        self.chunks.push(audioDataURL);
+
+        // start the recording again, but don't return as promise
+        if (!self._done) {
+          self._startRecording().then(function() {  
+            self.emit('recording:chunk:start');
+          });
+        }
+
+        return self._uploadRecording('/concepts/stream-recording', audioDataURL, self._done);
+
+      }).then(function() {
+
+        self.emit('upload:chunk:complete');
+        if (self._done) { self.emit('recording:stop upload:complete')}
+        else { setTimeout(_.bind(self.onChunk, self), 500); }
+
+      }).done();
+    },
+
+    /** Callback binding for the ending of the recording. */
+    onStopRecording: function() {
+      if($stopRecording.hasClass('pure-button-disabled')) { return false; }
+
+      this._done = true;
+      return false;
+    }
 
   });
 
-});
+  new streamContinousBlobsConcept();
+
+}());

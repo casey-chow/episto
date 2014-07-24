@@ -3,9 +3,25 @@
 <div class="centered-content">
 	
 	<section id="single-blob">
-		<h1>Phase 1: Streaming a Single Blob of Audio</h1>
+		<h1>Phase 1: Sending a Single Blob of Audio</h1>
 		<form>
-			<button class="pure-button pure-button-primary start-recording">Start Recording</button>
+			<button class="pure-button pure-button-primary pure-button-disabled start-recording">Start Recording</button>
+			<button class="pure-button pure-button-disabled stop-recording">Stop Recording</button>
+		</form>
+		
+		<p>
+			<audio class="player" controls>
+			  Your browser does not support the audio tag.
+			</audio>
+		</p>
+
+		<p class="log"><p>
+	</section>
+
+	<section id="continuous-blob">
+		<h1>Phase 2: Sending a Continuous Stream of Audio</h1>
+		<form>
+			<button class="pure-button pure-button-primary pure-button-disabled start-recording">Start Recording</button>
 			<button class="pure-button pure-button-disabled stop-recording">Stop Recording</button>
 		</form>
 		
