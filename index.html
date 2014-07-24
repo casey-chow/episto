@@ -20,6 +20,12 @@
 		<!-- For syntax highlighting -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
 
+		<style>
+			table.center tr td {
+				text-align: center;
+			}
+		</style>
+
 		<!-- If the query includes 'print-pdf', include the PDF print sheet -->
 		<script>
 			if( window.location.search.match( /print-pdf/gi ) ) {
@@ -68,16 +74,13 @@
 					<section>
 						<h2>Description</h2>
 						<p>
-							Episto intends to change the way users interact with audio recordings. A significant amount of time is wasted when just mindlessly playing a recording of an important meeting, class, or other event back to yourself. Using Episto, only the important parts of the recording are played back which would save time for the user.
+							Episto intends to change the way users interact with audio recordings. Instead of wasting time scrubbing through a recording for the parts that matter, using Episto, important information is extracted and pinpointed, allowing the user to reference meetings much more effectively.
 						</p>
 					</section>
 					<section>
 						<h2>Benefit</h2>
 						<p>
-							Episto is, in many ways, the <strong>natural next step for virtual assistants</strong>. This application of technology could allow virtual assistants like Siri to act on their own without inalienating the user.
-						</p>
-						<p>
-							The Episto method of recording comprehension saves tremendous amounts of time by only listening to things that are important. In most cases, meetings are filled with a lot of unnecessary discussion and a lot less important points. With Episto, listen to only what is important and save tremendous amounts of time.
+							Episto is the <strong>natural next step for virtual assistants</strong>. This application of technology could allow virtual assistants to act on their own without inalienating the user. At the same time, virtual assistants can take a greater role in the user's lifestyle, prioritizing information for them in a clear and reliable manner.
 						</p>
 					</section>
 				</section>
@@ -131,12 +134,12 @@
 						<h2>Architectural Decisions</h2>
 						<p>We determined the coding platform of the application.</p>
 						<div class="image fragment roll-in">
-							<img src="img/nodejs-logo.png" alt="Node.js Logo" style="margin: 1em auto; display:table;">
+							<img src="img/nodejs-logo.png" alt="Node.js Logo" style="margin: 1em auto; display:table; max-height: 22%;">
 							<a href="http://nodejs.org/">Node.js</a> for familiarity and real-time capabilities for the server.
 
 						</div>
 						<div class="image fragment roll-in">
-							<img src="img/sailsjs-logo.jpg" alt="Sails.js Logo" style="margin: 1em auto; display:table;">
+							<img src="img/sailsjs-logo.jpg" alt="Sails.js Logo" style="margin: 1em auto; display:table; max-height: 22%;">
 							<a href="http://sailsjs.org/">Sails.js</a> for reliability and ease of use.
 						</div>
 						<aside class="notes">
@@ -168,12 +171,49 @@
 
 				<section>
 					<section>
+						<h1>Weekly Update 7/24</h1>
+					</section>
+					<section>
+						<h2>Finished Application Website</h2>
+						<img src="img/wireframe-2014-07-24.png" alt="Episto Wireframe" style="max-height: 80%;">
+					</section>
+					<section>
+						<h2>Proofs of Concept</h2>
+						<p>We established a couple of working patterns for recording and streaming audio from the browser.</p>
+						<div>
+							<img src="img/demo-2014-07-24.png" alt="Demonstration of Audio Streaming">
+						</div>
+					</section>
+					<section>
+						<h2>(Under the Hood)</h2>
+						<table class="center">
+							<tr>
+								<td width="33%"><h3 style="margin:.25em 0 0.125em;">Recording</h3> <a href="https://www.webrtc-experiment.com/RecordRTC/"><img src="img/recordrtc-logo.png" alt="RecordRTC Title"></a></td>
+								<td width="33%"><h3 style="margin:.25em 0 0.125em;">Transmission</h3> <a href="http://socket.io"><img src="img/socketio-logo.png" alt="Socket.io Logo"></a></td>
+								<td width="33%"><h3 style="margin:.25em 0 0.125em;">Modularity</h3> <a href="http://hay.github.io/stapes/"><img src="img/stapesjs-logo.png" alt="Stapes.js Logo"></a></td>
+							</tr>
+						</table>
+					</section>
+					<section>
+						<h2>Next Week</h2>
+						<ul>
+							<li>More streaming and recording media demos</li>
+							<li>Working prototype of application</li>
+							<li>Testing of application prototype</li>
+							<li>UI design&mdash;use cases of application</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
 						<h1>Questions?</h1>
 					</section>
 					<section>
 						<h2>This presentation available at</h2>
 						<h3><a href="http://digitxp.github.io/episto">http://digitxp.github.io/episto</a></h3>
 					</section>
+				</section>
 
 			</div>
 
@@ -192,6 +232,12 @@
 				progress: true,
 				history: true,
 				center: true,
+
+				keyboard: {
+					86: function() {
+						annyang.start();
+					}
+				},
 
 				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
 				transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
@@ -231,8 +277,6 @@
 			});
 
 			annyang.debug();
-
-			if (self === top) { annyang.start(); }
 
 		</script>
 
