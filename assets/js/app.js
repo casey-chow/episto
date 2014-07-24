@@ -4,9 +4,13 @@
  * This is the main file for common code.
  *
  *=require zepto
+<<<<<<< Updated upstream
  *=require lodash
+=======
+>>>>>>> Stashed changes
  *=require socket.io
  *=require sails.io
+ *=require lodash
  */
 
 console.log('[Episto] Connecting to Sails.js...');

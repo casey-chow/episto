@@ -21,45 +21,13 @@
   var htmlLog = _.throttle(function(msg) { $log.html(msg); }, 1000);
   var $audioElement = $('#single-blob .player');
 
-  var _stream;
-  var recordAudio;
-
-
-  /** 
-   * Get the user media stream as a promise.
-   * @returns {Promise} The promise of a stream object. If it already exists,
-   *                    running `_getUserMedia().then(fn)` will run immediately.
-   */
-  var _getUserMedia = function() {
-    _stream = _stream || Q.Promise(function(resolve, reject, notify) {
-      navigator.getUserMedia({ 
-        audio: true 
-      }, resolve, reject);
-    });
-
-    return _stream;
-  };
-
-  /** 
-   * Uploads the recording taken from the mediaStream.
-   * @returns {Promise} A promise object encapsulating the request.
-   */
-  var _uploadRecording = function(url, audioDataURL) {
-    return Q.Promise(function(resolve, reject, notify) {
-        socket.post(url, { 
-          audio: audioDataURL,
-          type: recordAudio.getBlob().type || 'audio/wav'
-        }, resolve);
-    });
-  };
-
-  var singleBlobConcept = Concept.singleBlob = Concept.subclass({
+  var singleBlobConcept = Concept.Stream.SingleBlob = Concept.Stream.subclass({
 
     /** @constructor */
     constructor: function() {
-      Concept.prototype.constructor.call(this);
+      Concept.Stream.prototype.constructor.call(this);
 
-      console.log("[RecordSingleBlob] recording code activated");
+      console.log("[RecordSingleBlob] loading code");
 
       this.bindEvents();
     },
@@ -73,22 +41,25 @@
       this.on({
         'connect': function() {
           htmlLog('Ready to Record'); 
-          console.log("[RecordSingleBlob] socket connected");
+          $startRecording.removeClass('pure-button-disabled');
         },
         'recording:start': function() {
           htmlLog('Recording');
+
+          $startRecording.addClass('pure-button-disabled');
+          $stopRecording.removeClass('pure-button-disabled');
         },
         'recording:stop': function() {
           htmlLog('Recording Finished');
         },
         'upload:start': function(audioDataURL) {
-          console.log('Audio Data: ', audioDataURL);
-          console.time('Sending Data to Server');
+          console.log('[RecordSingleBlob] Audio Data: ', audioDataURL);
+          console.time('[RecordSingleBlob] Sending Data to Server');
           htmlLog('Sending Blob to Server');
         },
         'upload:complete': function(res) {
-          console.timeEnd("Sending Data to Server");
-          console.log("Server Response:", res);
+          console.timeEnd("[RecordSingleBlob] Sending Data to Server");
+          console.log("[RecordSingleBlob] Server Response:", res);
 
           htmlLog('Blob Successfully Sent');
           htmlLog('Ready to Record');
@@ -101,18 +72,10 @@
       if($startRecording.hasClass("pure-button-disabled")) { return false; }
 
       this.emit('recording:start');
-
-      $startRecording.addClass('pure-button-disabled');
-      $stopRecording.removeClass('pure-button-disabled');
-
-      _getUserMedia().then(function(stream) {
-        recordAudio = RecordRTC(stream, { bufferSize: 16384 });
-        recordAudio.startRecording();
-      }).catch(function(err) { console.log(err); });
-
+      this._startRecording();
       return false;
+      
     },
-
 
     /** Callback binding for the ending of the recording. */
     onStopRecording: function() {
@@ -121,28 +84,23 @@
 
       $stopRecording.addClass('pure-button-disabled');
 
-      Q.Promise(recordAudio.stopRecording).then(function() {
+      this._stopRecording().then(function() {
 
         self.emit('recording:stop');
         $startRecording.removeClass('pure-button-disabled');
-
-        return Q.Promise(function(resolve) {
-          recordAudio.getDataURL(resolve); 
-        });
+        return self._getRecordingDataURL();
 
       }).then(function(audioDataURL) {
 
         self.emit('upload:start', audioDataURL);
+        return self._uploadRecording('/concepts/stream-recording', audioDataURL);
 
-        return _uploadRecording('/concepts/stream-recording', audioDataURL);
-
-      }).done(function(res) {
+      }).then(function(res) {
 
         self.emit('upload:complete', res);
-
         $audioElement.attr('src', res.message);
 
-      });
+      }).done();
 
       return false;
     }
