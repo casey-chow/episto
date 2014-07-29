@@ -17,6 +17,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-bower-task');
   grunt.loadNpmTasks('grunt-npm-install');
   grunt.loadNpmTasks('grunt-mincer');
+  grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-shell');
 
   // Project configuration.
@@ -67,20 +68,15 @@ module.exports = function (grunt) {
       dev: {
         options: {
           include: ['assets/js', 'assets/styles', 'assets/lib', 'assets/vendor'],
-          enable: 'source_maps',
-          engines: {
-            Stylus: function(stylus) {
-              stylus.use(require('nib')());
-            }
-          }
+          enable: ['source_maps', 'autoprefixer'],
+          engines: { Stylus: function(stylus) { stylus.use(require('nib')()); } }
         },
         // Javascript is collected only on the top level to allow for ordering control.
-        // The exception is the index.js file, which is always loaded.
         files: [{
-          src: ['assets/js/*.js', 'assets/js/*.coffee', 'assets/js/**/index.js', 'assets/js/**/index.coffee'],
+          src: 'assets/js/*.js',
           dest: '.tmp/public/app.js'
         }, {
-          src: ['assets/styles/**/*.css', 'assets/styles/**/*.styl'],
+          src: 'assets/styles/*.css',
           dest: '.tmp/public/app.css'
         }]
       },
@@ -88,18 +84,29 @@ module.exports = function (grunt) {
       build: {
         options: {
           include: ['assets/js', 'assets/styles', 'assets/lib', 'assets/vendor'],
-          engines: {
-            Stylus: function(stylus) { stylus.use(require('nib')()); }
-          }
+          enable: ['autoprefixer'],
+          engines: { Stylus: function(stylus) { stylus.use(require('nib')()); } }
         },
         files: [{
-          expand: true,
-          cwd: 'assets/',
-          src: ["js/*.js", "styles/*.css"],
-          dest: 'www/'
+          src: 'assets/js/*.js',
+          dest: 'www/app.js'
+        }, {
+          src: 'assets/styles/*.css',
+          dest: 'www/app.css'
         }]
       }
 
+    },
+
+    replace: {
+      sourcemap: {
+        src: ['.tmp/public/*.*'],
+        overwrite: true,
+        replacements: [{
+          from: 'sourceMappingURL=.tmp/public/',
+          to: 'sourceMappingURL='
+        }]
+      }
     },
 
     /** Clean out the temporary directory before use. */
@@ -114,7 +121,7 @@ module.exports = function (grunt) {
         files: [{
             expand: true,
             cwd: './assets',
-            src: ['**/*.!(coffee|js|css|styl)'],
+            src: ['**/*', '!**/*.js', '!**/*.css'],
             dest: '.tmp/public'
         }]
       },
@@ -122,7 +129,7 @@ module.exports = function (grunt) {
         files: [{
             expand: true,
             cwd: '.tmp/public',
-            src: ['**/*.!(coffee|js|css|styl)'],
+            src: ['**/*', '!**/*.js', '!**/*.css'],
             dest: 'www'
         }]
       }
@@ -186,6 +193,7 @@ module.exports = function (grunt) {
   grunt.registerTask('compile', [
     'clean:dev',
     'mince:dev',
+    'replace:sourcemap',
     'copy:dev'   
   ]);
 
@@ -195,6 +203,7 @@ module.exports = function (grunt) {
     'clean:build',
     'bower:install',
     'mince:build',
+    'replace:sourcemap',
     'copy:build'
   ]);
 

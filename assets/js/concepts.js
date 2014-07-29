@@ -11,7 +11,7 @@
  *= require concepts/recordBlobStream
  */
 
-(function conceptsIndex() {
+(function concepts() {
   'use strict';
 
   if (!$("#attr").hasClass("stream-recording")) { return; }
