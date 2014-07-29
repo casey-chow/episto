@@ -117,7 +117,7 @@ function combineAudio(chunks, cb) {
 
   async.seq(
     function createDirectory(done) {
-      fs.mkdirp(path.resolve('tmp/audio'), done);
+      fs.mkdirp(path.resolve('.tmp/audio'), done);
     },
     function bufferizeChunks(err, done) {
       if (err) { sails.log.error(err); }
@@ -135,7 +135,7 @@ function combineAudio(chunks, cb) {
       async.each(chunks, function writeBuffer(arr, _done) {
         var chunkBuffer = arr[0];
         var index = arr[1];
-        var fileName = path.resolve('tmp/audio/'+index+'.wav');
+        var fileName = path.resolve('.tmp/audio/'+index+'.wav');
 
         files.push(fileName);
         sails.log('Writing to file ' + fileName);
@@ -144,7 +144,7 @@ function combineAudio(chunks, cb) {
     },
     function soxCombine(done) {
       sails.log('Combining with sox');
-      this.files.push(path.resolve('tmp/audio/out.wav'));
+      this.files.push(path.resolve('.tmp/audio/out.wav'));
       sails.log.verbose('Calling sox with parameters: ' + this.files.join(' '));
       execFile('sox', this.files, done);
     },
@@ -153,11 +153,11 @@ function combineAudio(chunks, cb) {
       if (stderr) { sails.log.error(stderr); }
 
       sails.log.info('Reading output file');
-      fs.readFile(path.resolve('tmp/audio/out.wav'), done);
+      fs.readFile(path.resolve('.tmp/audio/out.wav'), done);
     },
     function returnBase64(finalBuffer, done) {
       cb('data:audio/wav;base64,' + finalBuffer.toString('base64'));
-      fs.remove(path.resolve('tmp/audio/'), done);
+      fs.remove(path.resolve('.tmp/audio/'), done);
     }
   )(function() {
     sails.log('[Chunks] Completed Task');
