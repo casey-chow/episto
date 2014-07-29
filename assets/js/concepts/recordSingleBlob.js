@@ -93,7 +93,7 @@
       }).then(function(audioDataURL) {
 
         self.emit('upload:start', audioDataURL);
-        return self._uploadRecording('/concepts/stream-recording', audioDataURL);
+        return self._uploadRecording('/concepts/stream-recording/single', audioDataURL);
 
       }).then(function(res) {
 

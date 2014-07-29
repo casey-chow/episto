@@ -45,18 +45,23 @@
         'connect': function() {
           htmlLog('Ready to Record');
           $startRecording.removeClass('pure-button-disabled');
+          console.time('[RecordStreamContinousBlobs] No Recording Occurring');
         },
         'recording:start': function() {
           htmlLog('Recording');
+          console.time("[RecordStreamContinousBlobs] Recording Audio");
+
 
           $startRecording.addClass('pure-button-disabled');
           $stopRecording.removeClass('pure-button-disabled');
         },
         'recording:chunk:start': function() {
+          console.timeEnd('[RecordStreamContinousBlobs] No Recording Occurring');
           console.log('[RecordStreamContinousBlobs] Recording New Chunk');
         },
         'recording:chunk:stop': function() {
           console.log('[RecordStreamContinousBlobs] Recording Stopped');
+          console.time('[RecordStreamContinousBlobs] No Recording Occurring');
         },
         'upload:chunk:start': function(audioDataURL) {
           console.log('[RecordStreamContinousBlobs] Uploading Chunk:', audioDataURL);
@@ -67,6 +72,7 @@
         },
         'recording:stop': function() {
           htmlLog('Recording Finished');
+          console.timeEnd("[RecordStreamContinousBlobs] Recording Audio");
           $stopRecording.addClass('pure-button-disabled');
         },
         'upload:start': function(audioDataURL) {
@@ -76,10 +82,29 @@
         },
         'upload:complete': function(res) {
           console.timeEnd("[RecordStreamContinousBlobs] Sending Data to Server");
-          console.log("[RecordStreamContinousBlobs] Server Response:", res);
 
-          htmlLog('[RecordStreamContinousBlobs] Blob Successfully Sent');
-          htmlLog('[RecordStreamContinousBlobs] Ready to Record');
+          htmlLog('Stream Successfully Sent');
+          htmlLog('Ready to Record');
+
+          this.requestAudio();
+
+          $startRecording.removeClass('pure-button-disabled');
+          $stopRecording.addClass('pure-button-disabled');
+        },
+        'compilation:start': function() {
+          htmlLog('Requesting Compiled Audio');
+
+          console.time('[RecordStreamContinousBlobs] Requesting Compilation');
+          console.log('[RecordStreamContinousBlobs] Requesting Compilation');
+        },
+        'compilation:complete': function(res) {
+          htmlLog('Compiled Audio Retrieved');
+
+          console.timeEnd('[RecordStreamContinousBlobs] Requesting Compilation');
+
+          console.log('[RecordStreamContinousBlobs] Server Response:', res);
+
+          $audioElement.attr('src', res.message);
         }
       });
     },
@@ -90,7 +115,6 @@
 
       this.emit('recording:start');
       this.chunks = [];
-      console.log(this.chunks);
       this._startRecording()
       .delay(500).then(_.bind(this.onChunk, this));
       return false;
@@ -108,8 +132,6 @@
       }).then(function(audioDataURL) {
 
         self.emit('upload:chunk:start', audioDataURL);
-        console.log(self.chunks);
-        self.chunks.push(audioDataURL);
 
         // start the recording again, but don't return as promise
         if (!self._done) {
@@ -118,7 +140,7 @@
           });
         }
 
-        return self._uploadRecording('/concepts/stream-recording', audioDataURL, self._done);
+        return self._uploadRecording('/concepts/stream-recording/chunked', audioDataURL, self._done);
 
       }).then(function() {
 
@@ -134,7 +156,20 @@
       if($stopRecording.hasClass('pure-button-disabled')) { return false; }
 
       this._done = true;
+
       return false;
+    },
+
+    /** Request the compiled audio from the server. */
+    requestAudio: function() {
+      var self = this;
+      self.emit('compilation:start');
+
+      Q.Promise(function(resolve, reject, notify) {
+        socket.get('/concepts/stream-recording/chunked', resolve);
+      }).then(function(res) {
+        self.emit('compilation:complete', res);
+      });
     }
 
   });
