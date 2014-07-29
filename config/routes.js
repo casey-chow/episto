@@ -36,8 +36,10 @@ module.exports.routes = {
     view: 'home/index'
   },
 
-  'get /concepts/stream-recording': 'ConceptController.renderStreamRecording',
-  'post /concepts/stream-recording': 'ConceptController.streamRecording'
+  '/concepts/stream-recording': 'ConceptController.renderStreamRecording',
+
+  '/concepts/stream-recording/single': 'ConceptController.recordSingleBlob',
+  '/concepts/stream-recording/chunked': 'ConceptController.recordBlobStream'
 
   /*
   // But what if you want your home page to display
