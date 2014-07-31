@@ -8,27 +8,26 @@ For development, just fill out the correct information for `adapters_local_mongo
 
 If you haven't set up MongoDB before, it's fairly simple:
 
-1. Follow the [MongoDB Installation Guide](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) to create a service.
-2. Connect to the database by running `mongo` (you may have to cd into the mongodb directory to do this) and create a new admin user:
-
-```js
+<ol>
+<li>Follow the [MongoDB Installation Guide](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/) to create a service.</li>
+<li>Connect to the database by running `mongo` (you may have to cd into the mongodb directory to do this) and create a new admin user:
+ ```js
 use admin
 db.createUser({
     user: "admin", pwd: "password",
     roles: [{ role: "userAdminAnyDatabase", db: "admin" }]
 })
 ```
-
-3. From the same console, create an episto user as well:
-
+</li>
+<li>From the same console, create an episto user as well:
 ```js
 db.createUser({
  		user:"episto", pwd:"password", 
  		roles: [{role:"readWrite", db:"episto"}]
 })
 ```
-
-4. This should allow Episto to run like a charm on any dev environment.
+<li>
+<li>This should allow Episto to run like a charm on any dev environment.</li>
 
 ## Testing
 
