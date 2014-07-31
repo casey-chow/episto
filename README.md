@@ -1,5 +1,11 @@
 # episto
 
+Episto intends to change the way users interact with audio recordings. Instead of wasting time scrubbing through a recording for the parts that matter, using Episto, important information is extracted and pinpointed, allowing the user to reference meetings much more effectively.
+
+### Why?
+
+Episto is the natural next step for virtual assistants. This application of technology could allow virtual assistants to act on their own without inalienating the user. At the same time, virtual assistants can take a greater role in the user's lifestyle, prioritizing information for them in a clear and reliable manner.
+
 ## Installation
 
 ### Database
