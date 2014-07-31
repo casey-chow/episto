@@ -207,6 +207,38 @@
 
 				<section>
 					<section>
+						<h1>Weekly Update 7/31</h1>
+					</section>
+					<section>
+						<h2>The Final Proof of Concept</h2>
+						<p>We completed Proofs of Concept 2 and 3, which allow for continuous upload of files.</p>
+						<p>
+							Proof of Concept 3 allowed for approximately <strong>14 submissions per second</strong>,
+							with a consistent latency of about <strong>10 ms</strong> on a loopback device.
+						</p>
+					</section>
+					<section>
+						<h2>(Under the Hood)</h2>
+						<p class="fragment">
+							PoC 3 uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext.createScriptProcessor"><code>createScriptProcessor</code></a> function in the WebAudio API to pull 
+							raw sampling data from the microphone.
+						</p>
+						<p class="fragment">
+							This sampling data is <a href="https://github.com/fritzo/wavencoderjs">encoded</a> into a 
+							base64-encoded WAV file in Javascript and uploaded using socket.io.
+						</p>
+					</section>
+					<section>
+						<img src="img/poc3-data-flow.png" alt="Proof of Concept 3 Data Flow">
+					</section>
+					<section>
+						<h2>Interface Design</h2>
+						<p>We began working on the frontend interface for the application, as well as another splash page.</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
 						<h1>Questions?</h1>
 					</section>
 					<section>
