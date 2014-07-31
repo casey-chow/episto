@@ -100,7 +100,7 @@ module.exports = {
       });
     } else {
       sails.log.verbose('[Chunks] Compiling chunks')
-      combineAudio(chunks, function(compilation) {
+      combineAudioChunks(chunks, function(compilation) {
         sails.log.info('[Chunks] Sending chunk result: ' + compilation.slice(-128));
         res.send({
           success: true,
@@ -109,10 +109,59 @@ module.exports = {
         });
       });
     }
-  }
+  },
+
+  /**
+   * This method receieves WAV-encoded audio and stiches it back as base64 encoded WAV data.
+   *
+   * @example
+   * socket.post('/concepts/stream-recording/webaudio', { 
+   *   audio: [ "table of audio sample data" ] 
+   * }, function(res) { "respond to the data"; });
+   */
+  recordWebAudio: function(req, res) {
+    var audioData, audioExcerpt;
+    var chunks = req.session.webAudioChunks = req.session.webAudioChunks || [];
+
+    if (req.method == 'POST' && req.param('done')) {
+      sails.log('[Chunks] Stream ended.');
+      return;
+    } else if (req.method == 'POST') {
+      audioData = req.param('audio');
+      audioExcerpt = audioData.slice(-128);
+
+      sails.log('[WebAudio] Received Audio: ' + audioExcerpt);
+      chunks.push(audioData);
+      sails.log.verbose('[WebAudio] Chunk collection now at length ' + chunks.length);
+
+      res.json({
+        success: true,
+        message: audioData,
+        length: audioData.length,
+        chunks: chunks.length
+      });
+    } else {
+      sails.log.verbose('[WebAudio] Compiling chunks')
+      combineAudioChunks(chunks, function(compilation) {
+        sails.log.info('[WebAudio] Sending chunk result: ' + compilation.slice(-128));
+        res.send({
+          success: true,
+          message: compilation,
+          length: chunks.reduce(function(sum, cur) { return sum + cur.length; }, 0)
+        });
+      });
+    }
+  },
 };
 
-function combineAudio(chunks, cb) {
+/**
+ * Combines the WAV chunks into a single sample.
+ *
+ * @param {Array} chunks - an array of the base64-encoded WAV chunks
+ * @param {Function} cb - a callback with the signature cb(compilation), 
+ *                        which receives the final base64-encoded compilation
+ */
+function combineAudioChunks(chunks, cb) {
   var length = chunks.length;
 
   async.seq(
@@ -163,3 +212,4 @@ function combineAudio(chunks, cb) {
     sails.log('[Chunks] Completed Task');
   });
 }
+

@@ -7,8 +7,7 @@
  *
  *= require stapes
  *= require_self
- *= require concepts/recordSingleBlob
- *= require concepts/recordBlobStream
+ *= require_tree concepts
  */
 
 (function concepts() {

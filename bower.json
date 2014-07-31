@@ -7,6 +7,7 @@
     "recordrtc": "http://cdn.WebRTC-Experiment.com/RecordRTC.js",
     "pure": "~0.5.0",
     "q": "https://raw.githubusercontent.com/kriskowal/q/v1/q.js",
-    "stapes": "~0.8.1"
+    "stapes": "~0.8.1",
+    "wavencoder": "https://raw.githubusercontent.com/fritzo/wavencoderjs/master/wavencoder.js"
   }
 }
