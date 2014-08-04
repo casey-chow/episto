@@ -156,17 +156,15 @@ module.exports = function (grunt) {
      */
     watch: {
       api: {
-
-        // API files to watch:
         files: ['api/**/*']
       },
       assets: {
-
-        // Assets to watch:
         files: ['assets/**/*'],
-
-        // When assets are changed:
         tasks: ['compile']
+      },
+      spec: {
+        files: ['api/**/*', 'assets/**/*.js', 'specs/**/*'],
+        tasks: ['spec']
       }
     }
   });
