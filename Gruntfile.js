@@ -73,11 +73,15 @@ module.exports = function (grunt) {
         },
         // Javascript is collected only on the top level to allow for ordering control.
         files: [{
-          src: 'assets/js/*.js',
-          dest: '.tmp/public/app.js'
+          expand: true,
+          cwd: 'assets',
+          src: 'js/*.js',
+          dest: '.tmp/public/'
         }, {
-          src: 'assets/styles/*.css',
-          dest: '.tmp/public/app.css'
+          expand: true,
+          cwd: 'assets',
+          src: 'styles/*.css',
+          dest: '.tmp/public/'
         }]
       },
 
@@ -100,7 +104,7 @@ module.exports = function (grunt) {
 
     replace: {
       sourcemap: {
-        src: ['.tmp/public/*.*'],
+        src: ['.tmp/public/**/*.*'],
         overwrite: true,
         replacements: [{
           from: 'sourceMappingURL=.tmp/public/',
@@ -112,7 +116,8 @@ module.exports = function (grunt) {
     /** Clean out the temporary directory before use. */
     clean: {
       dev: ['.tmp/public/**'],
-      build: ['www']
+      build: ['www'],
+      reset: ['.tmp/**', 'assets/vendor/**', 'node_modules/**']
     },
 
     /** Copy anything that isn't Javascript/CSS or a source file of it. */
@@ -120,8 +125,14 @@ module.exports = function (grunt) {
       dev: {
         files: [{
             expand: true,
-            cwd: './assets',
-            src: ['**/*', '!**/*.js', '!**/*.css'],
+            cwd: 'assets',
+            src: [
+              '**/*', 
+              '!**/*.js', 
+              '!**/*.css',
+              '!vendor/**',
+              '!lib/**'
+            ],
             dest: '.tmp/public'
         }]
       },
@@ -215,4 +226,7 @@ module.exports = function (grunt) {
   // Running Sails itself
   grunt.registerTask('run', ['shell:run']);
   grunt.registerTask('dev', ['shell:dev']);
+
+  // Resetting
+  grunt.registerTask('reset', ['clean:reset']);
 };
