@@ -9,31 +9,13 @@ module.exports = function (grunt) {
 
   // Get path to core grunt dependencies from Sails
   var depsPath = grunt.option('gdsrc') || 'node_modules/sails/node_modules';
+  
   grunt.loadTasks(depsPath + '/grunt-contrib-clean/tasks');
-  grunt.loadTasks(depsPath + '/grunt-contrib-copy/tasks');
-  grunt.loadTasks(depsPath + '/grunt-contrib-watch/tasks');
-
-  grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-bower-task');
-  grunt.loadNpmTasks('grunt-npm-install');
-  grunt.loadNpmTasks('grunt-mincer');
-  grunt.loadNpmTasks('grunt-text-replace');
-  grunt.loadNpmTasks('grunt-shell');
 
   // Project configuration.
   grunt.initConfig({
 
     pkg: grunt.file.readJSON('package.json'),
-
-
-    shell: {
-      run: {
-        command: 'node app.js'
-      },
-      dev: {
-        command: 'node ./node_modules/nodemon/bin/nodemon.js app.js'
-      }
-    },
 
     /** 
      * Bower
@@ -108,7 +90,7 @@ module.exports = function (grunt) {
         overwrite: true,
         replacements: [{
           from: 'sourceMappingURL=.tmp/public/',
-          to: 'sourceMappingURL='
+          to: 'sourceMappingURL=/'
         }]
       }
     },
@@ -187,46 +169,77 @@ module.exports = function (grunt) {
    */
 
   // When Sails is lifted:
-  grunt.registerTask('default', [
-    'install',
-    'compile',
-    'watch'
-  ]);
+  grunt.registerTask('default', [], function() {
+    grunt.loadTasks(depsPath + '/grunt-contrib-watch/tasks');
 
-  grunt.registerTask('install', [
-    'bower:install',
-    'npm-install'
-  ]);
+    grunt.task.run(
+      'compile',
+      'watch:assets'
+    );
+  });
+
+  grunt.registerTask('install', [], function() {
+    grunt.loadNpmTasks('grunt-bower-task');
+    grunt.loadNpmTasks('grunt-npm-install');
+
+    grunt.task.run(
+      'bower:install',
+      'npm-install'
+    );
+  });
 
   // A single generic task to do everything you need with assets.
-  grunt.registerTask('compile', [
-    'clean:dev',
-    'mince:dev',
-    'replace:sourcemap',
-    'copy:dev'   
-  ]);
+  grunt.registerTask('compile', [], function() {
+    grunt.loadNpmTasks('grunt-mincer');
+    grunt.loadNpmTasks('grunt-text-replace');
+    grunt.loadNpmTasks('grunt-newer');
+    grunt.loadTasks(depsPath + '/grunt-contrib-copy/tasks');
+
+    grunt.task.run(
+      // 'clean:dev',
+      'mince:dev',
+      'replace:sourcemap',
+      'newer:copy:dev'   
+    );
+  });
 
   // Build the assets into a web accessible folder.
   // (handy for phone gap apps, chrome extensions, etc.)
-  grunt.registerTask('build', [
-    'clean:build',
-    'bower:install',
-    'mince:build',
-    'replace:sourcemap',
-    'copy:build'
-  ]);
+  grunt.registerTask('build', [], function() {
+    grunt.loadNpmTasks('grunt-mincer');
+    grunt.loadNpmTasks('grunt-bower-task');
+    grunt.loadNpmTasks('grunt-text-replace');
+    grunt.loadTasks(depsPath + '/grunt-contrib-copy/tasks');
+
+    grunt.task.run(
+      'clean:build',
+      'bower:install',
+      'mince:build',
+      'replace:sourcemap',
+      'copy:build'
+    );
+  });
 
   // When sails is lifted in production
   grunt.registerTask('prod', [ 'compile' ]);
 
   // Testing Stuff
-  grunt.registerTask('test', [ 'mochaTest' ]);
-  grunt.registerTask('spec', [ 'mochaTest' ]);
+  grunt.registerTask('spec', [], function() {
+    grunt.loadNpmTasks('grunt-mocha-test');
 
-  // Running Sails itself
-  grunt.registerTask('run', ['shell:run']);
-  grunt.registerTask('dev', ['shell:dev']);
+    grunt.task.run('mochaTest');
+  });
+
+  grunt.registerTask('spec:watch', [], function() {
+    grunt.loadTasks(depsPath + '/grunt-contrib-watch/tasks');
+
+    grunt.task.run('watch:spec');
+  });
 
   // Resetting
-  grunt.registerTask('reset', ['clean:reset']);
+  grunt.registerTask('reset', [], function() {
+    grunt.task.run(
+      'clean:reset'
+    );
+  });
 };
