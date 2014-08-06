@@ -9,6 +9,8 @@
     "q": "https://raw.githubusercontent.com/kriskowal/q/v1/q.js",
     "stapes": "~0.8.1",
     "wavencoder": "https://raw.githubusercontent.com/fritzo/wavencoderjs/master/wavencoder.js",
-    "bootstrap": "~3.2.0"
+    "when": "~3.4.2",
+    "bootstrap": "~3.2.0",
+    "backbone": "~1.1.2"
   }
 }
