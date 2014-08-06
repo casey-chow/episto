@@ -8,7 +8,11 @@
  * http://sailsjs.org/#documentation
  */
 
+var expressHelpers = require('express-helpers');
+
 module.exports.bootstrap = function (cb) {
+
+	expressHelpers(sails.express.app);
 
   // It's very important to trigger this callack method when you are finished 
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)

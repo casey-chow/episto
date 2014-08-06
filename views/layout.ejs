@@ -8,6 +8,7 @@
 
     <!--STYLES-->
     <link rel="stylesheet" href="/styles/app.css">
+    <%- stylesheets %>
     <!--/STYLES-->
   </head>
   <body class="<%if(locals.body_classes){%><%=body_classes%><%}%>">
@@ -15,6 +16,7 @@
 
     <!--SCRIPTS-->
     <script src="/js/app.js"></script>
+    <%- scripts %>
     <!--SCRIPTS END-->
   </body>
 </html>
