@@ -1,4 +1,28 @@
-<form>
-	<input type="submit" id="start-recording" value="Start Recording">
-	<input type="submit" id="stop-recording" value="Stop Recording">
-</form>
+<% script('/js/recordings.app.js') %>
+
+<div class="container">
+
+	<article class="row">
+
+		<section id="web-audio" class="col-md-4">
+			<h1>New Recording</h1>
+
+			<form role="form">
+				<div class="form-group">
+					<button disabled class="btn btn-primary start-recording">Start Recording</button>
+					<button disabled class="btn stop-recording">Stop Recording</button>
+				</div>
+			</form>
+			
+			<p>
+				<audio class="player" controls>
+				  Your browser does not support the audio tag.
+				</audio>
+			</p>
+
+			<p class="log"><p>
+		</section>
+
+	</article>
+
+</div>

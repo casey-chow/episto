@@ -15,6 +15,15 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 
+var _ = require('lodash');
+var when = require('when');
+
+var combineChunks = function(chunks) {
+  when.map(chunks, function(value, index) {
+    return 
+  })
+}
+
 module.exports = {
     
   /**
@@ -31,6 +40,13 @@ module.exports = {
     sails.log('RecordingController.index');
     sails.log.info(req.params);
     res.json(req.params);
+  },
+
+  /**
+   * For receiving new audio chunks.
+   */
+  chunk: function(req, res) {
+    
   }
 
   

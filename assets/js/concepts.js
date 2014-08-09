@@ -7,7 +7,7 @@
  *
  *= require stapes
  *= require_self
- *= require_tree concepts
+ *(=) require_tree concepts
  */
 
 (function concepts() {

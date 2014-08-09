@@ -46,7 +46,7 @@ Episto.AudioStream = (function(window, document, Episto, undefined) {
         navigator.getUserMedia({ audio: true }, resolve, reject);
       });
 
-      return AudioStream;
+      return my.audioStream;
 
     },
 
@@ -73,7 +73,7 @@ Episto.AudioStream = (function(window, document, Episto, undefined) {
     openStream: function(audioStream) {
 
       var bufferSize = Episto.config.bufferSize;
-      var my.streamOpen = !!my.audioStream;
+      my.streamOpen = !!my.audioStream;
 
       if(!my.streamOpen) {
 
