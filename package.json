@@ -18,7 +18,6 @@
     "optimist": "0.3.4",
     "sails": "0.9.16",
     "sails-disk": "~0.9.0",
-    "sails-mongo": "^0.9.8",
     "when": "^3.4.2"
   },
   "scripts": {

@@ -18,23 +18,12 @@ module.exports.adapters = {
 
   // If you leave the adapter config unspecified 
   // in a model definition, 'default' will be used.
-  'default': 'mongo',
+  'default': 'disk',
 
   // Persistent adapter for DEVELOPMENT ONLY
   // (data is preserved when the server shuts down)
   disk: {
     module: 'sails-disk'
-  },
-
-  // MongoDB adapter. Schemaless NoSQL goodness.
-  // https://github.com/balderdashy/sails-mongo
-  mongo: {
-    module:   'sails-mongo',
-    host:     env.MONGO_HOST || 'localhost',
-    port:     env.MONGO_PORT ||  27017,
-    user:     env.MONGO_USER || 'episto',
-    password: env.MONGO_PWD  || 'password',
-    database: env.MONGO_DB   || 'episto'
   }
 
 };
