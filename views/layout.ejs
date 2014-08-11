@@ -11,7 +11,9 @@
     <!--/STYLES-->
   </head>
   <body class="<%if(locals.body_classes){%><%=body_classes%><%}%>">
-    <%- body %>
+    <div class="container">
+      <%- body %>
+    </div>
 
     <!--SCRIPTS-->
     <script src="/app.js"></script>

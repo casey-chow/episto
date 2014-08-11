@@ -3,7 +3,8 @@
  *
  * This is the main file for common code.
  *
- *=require zepto
+ *=require jquery
+ *=require bootstrap/bootstrap
  *=require lodash
  *=require socket.io
  *=require sails.io

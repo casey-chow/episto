@@ -3,11 +3,10 @@
  *
  * This is the main file for common styles.
  *
- *=require pure
+ *=require bootstrap
  */
 
- .centered-content {
-	display: table;
-	margin: 0 auto;
-	width: 75%;
+.record-controls {
+	margin-left: 0;
+	margin-right: 0;	
 }

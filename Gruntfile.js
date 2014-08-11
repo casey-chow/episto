@@ -132,7 +132,15 @@ module.exports = function (grunt) {
             src: ['**/*', '!**/*.js', '!**/*.css'],
             dest: 'www'
         }]
-      }
+      },
+      bootstrap: {
+        files: [{
+            expand: true,
+            cwd: '.tmp/public/vendor/bootstrap/fonts',
+            src: ['**/*.*'],
+            dest: '.tmp/public/fonts'
+        }]
+      },
     },
 
     /**
@@ -192,7 +200,8 @@ module.exports = function (grunt) {
     'clean:dev',
     'mince:dev',
     'replace:sourcemap',
-    'copy:dev'   
+    'copy:dev',
+    'copy:bootstrap'   
   ]);
 
   // Build the assets into a web accessible folder.
