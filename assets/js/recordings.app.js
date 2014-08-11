@@ -20,8 +20,8 @@ Episto.Collections = Episto.Collections || {};
 Episto.Controllers = Episto.Controllers || {};
 Episto.Views = Episto.Views || {};
 
-Episto.log = _.bind(console.log, console);
-Episto.error = _.bind(console.error, console);
+Episto.log = Function.prototype.bind.call(console.log, console);
+Episto.error = Function.prototype.bind.call(console.error, console);
 
 $(function () {
 
@@ -39,7 +39,7 @@ $(function () {
 });
 
 Episto.Init = function(opts) {
-	Episto.options = opts;
+	Episto.config = opts;
 
 	Episto.Controllers.Recording.ready();
 };

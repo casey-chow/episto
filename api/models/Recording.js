@@ -19,8 +19,10 @@ module.exports = {
       required: true,
 
       /** The default title is "Meeting from <Date>" */
-      defaultsTo: function() { return 'Meeting from ' + (new Date()).toString(); }
-    },
+      defaultsTo: function() {
+        sails.log(new Date());
+       return 'Meeting from ' + (new Date()).toString(); }
+    },  
 
     /**
      * The length of the recording, in milliseconds.

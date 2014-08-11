@@ -28,9 +28,9 @@ Episto.Views.Recording = (function(window, document, Episto, undefined) {
     bindEvents: function() {
       
       this.$el.find('.start-recording').click(
-        _.bind(this.emit, this, 'startBtn:click'));
+        this.emit.bind(this, 'startBtn:click'));
       this.$el.find('.stop-recording').click(
-        _.bind(this.emit, this, 'stopBtn:click'));
+        this.emit.bind(this, 'stopBtn:click'));
       
       this.on({
         'change:recordingState': this.updateRecordingState 

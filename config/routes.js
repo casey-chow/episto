@@ -40,7 +40,10 @@ module.exports.routes = {
 
   '/concepts/stream-recording/single': 'ConceptController.recordSingleBlob',
   '/concepts/stream-recording/chunked': 'ConceptController.recordBlobStream',
-  '/concepts/stream-recording/webaudio': 'ConceptController.recordWebAudio'
+  '/concepts/stream-recording/webaudio': 'ConceptController.recordWebAudio',
+
+
+  'get /recordings/new': { view: 'recording/new' },
 
   /*
   // But what if you want your home page to display

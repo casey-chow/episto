@@ -36,7 +36,7 @@ Episto.Controllers.Recording = (function(window, document, Episto, undefined) {
           that.startRecording(e).done();
         },
         'stopBtn:click': function(e) {
-          that.stopRecording(e).done();
+          that.stopRecording(e);
         }
       });
 
@@ -47,6 +47,7 @@ Episto.Controllers.Recording = (function(window, document, Episto, undefined) {
      * @returns {Promise} Promise fulfilled when the recording starts.
      */
     startRecording: function(e) {
+      var that = this;
       
       if (this.recording) {
         Episto.error('Already recording, new recording cannot begin.');
@@ -54,13 +55,11 @@ Episto.Controllers.Recording = (function(window, document, Episto, undefined) {
         Episto.log('Starting recording...');
       }
       
-      this.recording = new Recording();
-      RecordingCollection.push(this.recording);
+      var recording = this.recording = new Recording();
+      RecordingCollection.push(recording);
 
-      return when.callbacks
-        .call(_.bind(this.recording.on, this.recording, 'ready'))
-        .with(this.recording)
-        .then(this.recording.start);
+      return when.callbacks.call(recording.on.bind(recording), 'ready')
+      .then(function(res) { that.recording.start(); });
 
     },
 
@@ -72,7 +71,7 @@ Episto.Controllers.Recording = (function(window, document, Episto, undefined) {
         Episto.error('No recording exists, recording cannot stop.');
       }
 
-      return recording.stop().then(function() {
+      return recording.stop().tap(function() {
         that.recording = null;
       }).then(recording.getCompiledAudio)
       .then(function(audio) {

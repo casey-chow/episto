@@ -45,8 +45,8 @@
     /** Bind all the events needed for the application. */
     bindEvents: function() {
 
-      $startRecording.click(_.bind(this.onStartRecording, this));
-      $stopRecording.click(_.bind(this.onStopRecording, this));
+      $startRecording.click(this.onStartRecording.bind(this));
+      $stopRecording.click(this.onStopRecording.bind(this));
 
       this.on({
         'connect': function() {
@@ -120,7 +120,7 @@
         self._audioSource = self._context.createMediaStreamSource(audioStream);
         self._scriptProcessor = self._context.createScriptProcessor(self._bufferSize,1,1);
 
-        self._scriptProcessor.onaudioprocess = _.bind(self.onChunk, self);
+        self._scriptProcessor.onaudioprocess = self.onChunk.bind(self);
 
         // Plug everything in
         self._audioSource.connect(self._scriptProcessor);

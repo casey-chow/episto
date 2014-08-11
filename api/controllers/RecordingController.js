@@ -36,6 +36,20 @@ module.exports = {
     res.view();
   },
 
+  create: function(req, res) {
+    sails.log('RecordingController.create');
+
+    var params = _.pick(req.params, 'title');
+
+    Recording.create(params, function(err, recording) {
+      if (err) sails.log.error(err);
+      
+      sails.log(recording);
+      res.json(recording);
+    });
+
+  },
+
   index: function(req, res) {
     sails.log('RecordingController.index');
     sails.log.info(req.params);

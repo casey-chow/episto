@@ -54,16 +54,17 @@ Episto.Models.Recording = (function(window, document, Episto, undefined) {
 
       this.bindEvents();
 
-      socket.post('/recordings/', {
-        title: '' + new Date()
-      }, function() { that.emit('ready'); })
+      socket.post('/recordings/create', {}, function(res) { 
+        that.emit('ready', res); 
+      });
 
     },
 
     bindEvents: function() {
       this.on({
-        'ready': function() {
+        'ready': function(res) {
           Episto.log('App is ready to record');
+          Episto.log('Server returned', res);
         },
         'stop': function() {
           Episto.log('Stopped recording', this.id);
@@ -84,8 +85,10 @@ Episto.Models.Recording = (function(window, document, Episto, undefined) {
      */
     start: function() {
 
+      Episto.log('Starting recording');
+
       return Episto.AudioStream.open()
-        .tap(_.bind(this.emit, this, 'start'))
+        .tap(this.emit.bind(this, 'start'))
         .then(function(stream) {
           Episto.log('binding streams')
           // stream.on('chunk', _.bind(this.storeChunk, this));
@@ -133,7 +136,7 @@ Episto.Models.Recording = (function(window, document, Episto, undefined) {
 
         this.uploadUrl = Episto.config.uploadURL(this.id);
  
-        return when.callbacks.call(_.bind(socket.post, socket), this.uploadUrl, { 
+        return when.callbacks.call(socket.post.bind(socket), this.uploadUrl, { 
             audio: chunk,
             done: false,
             type: 'audio/wav'
@@ -148,7 +151,7 @@ Episto.Models.Recording = (function(window, document, Episto, undefined) {
      */
     notifyDone: function() {
 
-      return when.callbacks.call(_.bind(socket.post, socket), this.uploadUrl, {
+      return when.callbacks.call(socket.post.bind(socket), this.uploadUrl, {
         done: true
       }).done();
 

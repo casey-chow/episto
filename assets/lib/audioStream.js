@@ -35,15 +35,24 @@ Episto.AudioStream = (function(window, document, Episto, undefined) {
      * -scriptProcessor
      */
 
+    /** An alias to getUserMedia with vendor extension support. */
+    getUserMedia: ( 
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia
+    ),
+
     /** 
      * Get the user media stream as a promise.
      *
      * @returns {Promise} The promise of a stream object.
+     * @see https://developer.mozilla.org/en-US/docs/NavigatorUserMedia.getUserMedia
      */
     getAudioStream: function() {
 
       my.audioStream = my.audioStream || when.promise(function(resolve, reject) {
-        navigator.getUserMedia({ audio: true }, resolve, reject);
+        navigator.webkitGetUserMedia({ audio: true }, resolve, reject);
       });
 
       return my.audioStream;
@@ -71,6 +80,9 @@ Episto.AudioStream = (function(window, document, Episto, undefined) {
      * @returns {Promise} Immediately-fulfilled empty promise.
      */
     openStream: function(audioStream) {
+
+      Episto.log('Opening audio stream');
+
 
       var bufferSize = Episto.config.bufferSize;
       my.streamOpen = !!my.audioStream;
