@@ -7,6 +7,7 @@
  *
  *= require jquery
  *= require lodash
+ *= require stapes
  *= require socket.io
  *= require sails.io
  *= require q
@@ -64,11 +65,9 @@ window.Recorder = (function recorder() {
       my.log("[Episto] loading code");
 
       my.bufferSize = 4096;
-
       my.wavEncoder = new WavEncoder(my.bufferSize, {
         sampleRateHz: 48000
       });
-
 
       this.bindEvents();
     },
@@ -79,16 +78,15 @@ window.Recorder = (function recorder() {
       my.$startRecording.click(this.onStartRecording.bind(this));
       my.$stopRecording.click(this.onStopRecording.bind(this));
 
-      this.on({
-        'connect': function() {
-          my.status('Ready to Record');
-          my.$startRecording.prop('disabled', false);
-        },
+      socket.on('connect', function() {
+        my.status('Ready to Record');
+        my.$startRecording.prop('disabled', false);
+      });
 
+      this.on({
         'recording:start': function() {
           my.status('Recording');
           my.time("[Episto] Recording Audio");
-
 
           my.$startRecording.prop('disabled', true);
           my.$stopRecording.prop('disabled', false);

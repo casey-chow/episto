@@ -10,3 +10,10 @@
 	margin-left: 0;
 	margin-right: 0;	
 }
+
+#status {
+	margin-top: 8px;
+	margin-bottom: 8px;
+
+	padding: 6px 12px;
+}

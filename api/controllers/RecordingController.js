@@ -20,6 +20,13 @@ var path = require('path');
 var execFile = require('child_process').execFile;
 
 var my = {
+
+  /** Serial number to ensure audio files don't conflict with one another. */
+  serial: 0,
+
+  baseDir: '.tmp/audio',
+  outDir: '.tmp/audio/out',
+
   /**
    * Combines the WAV chunks into a single sample.
    *
@@ -29,10 +36,18 @@ var my = {
    */
   combineAudioChunks: function(chunks, cb) {
     var length = chunks.length;
+    my.serial += 1;
+
+    var inputDir = path.resolve(path.join(my.baseDir, ''+my.serial));
+    var outputFile = path.resolve(path.join(my.outDir, ''+my.serial+'.wav'));
 
     async.seq(
       function createDirectory(done) {
-        fs.mkdirp(path.resolve('.tmp/audio'), done);
+        fs.ensureDir(inputDir, done);
+      },
+      function createDirectory2(err, done) {
+        if (err) { sails.log.error(err); }
+        fs.ensureDir(my.outDir, done);
       },
       function bufferizeChunks(err, done) {
         if (err) { sails.log.error(err); }
@@ -50,31 +65,36 @@ var my = {
         async.each(chunks, function writeBuffer(arr, _done) {
           var chunkBuffer = arr[0];
           var index = arr[1];
-          var fileName = path.resolve('.tmp/audio/'+index+'.wav');
+          var fileName = path.join(inputDir, ''+index+'.wav');
 
           files.push(fileName);
-          sails.log('Writing to file ' + fileName);
+          sails.log.verbose('[Chunks] Writing to file ' + fileName);
           fs.writeFile(fileName, chunkBuffer, _done);
         }, done);
       },
       function soxCombine(done) {
-        sails.log('Combining with sox');
-        this.files.push(path.resolve('.tmp/audio/out.wav'));
-        sails.log.verbose('Calling sox with parameters: ' + this.files.join(' '));
-        execFile('sox', this.files, done);
+        sails.log.verbose('[Chunks] Combining with sox');
+
+        this.files.push(outputFile);
+        sails.log.verbose('[Chunks] Calling sox with parameters: ' + this.files.join(' '));
+
+        execFile('sox', this.files, { timeout: 500 }, done);
       },
       function readFile(stdout, stderr, done) {
         if (stdout) { sails.log(stdout); }
         if (stderr) { sails.log.error(stderr); }
 
-        sails.log.info('Reading output file');
-        fs.readFile(path.resolve('.tmp/audio/out.wav'), done);
+        sails.log.verbose('[Chunks] Reading output file');
+        fs.readFile(outputFile, done);
       },
       function returnBase64(finalBuffer, done) {
+        sails.log('Returning buffer');
         cb('data:audio/wav;base64,' + finalBuffer.toString('base64'));
-        fs.remove(path.resolve('.tmp/audio/'), done);
+        done();
       }
-    )(function() {
+    )(function(err, results) {
+      if (err) { sails.log.error(err); }
+      if (results) { sails.log(results); }
       sails.log('[Chunks] Completed Task');
     });
   }
@@ -89,6 +109,7 @@ module.exports = {
   _config: {},
 
   new: function(req, res) {
+    fs.remov
     res.view();
   },
 
@@ -127,8 +148,11 @@ module.exports = {
   },
 
   compile: function(req, res) {
-    var chunks = req.session.chunks = req.session.chunks || [];
+    var chunks = req.session.chunks;
 
+    if(!chunks) { sails.log.error('Compile called without chunks stored.'); }
+
+    req.session.chunks = []; // Reset for the next round.
     sails.log.verbose('[Chunks] Compiling chunks');
 
     my.combineAudioChunks(chunks, function(compilation) {
