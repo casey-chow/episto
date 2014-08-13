@@ -24,10 +24,6 @@ Run `npm test` or `grunt test`.
 
 * Run `$Env:GYP_MSVS_VERSION=2013` before running `npm i` on Windows if npm is returning errors that mention ` The build tools for Visual Studio 2010 (Platform Toolset = 'v100') cannot be found.`.
 
-## Proofs of Concept
-
-Before any one part of Episto was implemented, we made sure the underlying technology was viable using proofs of concept. When lifting Sails, check them out by navigating to `localhost:3000/concepts`.
-
 ## Useful Documentation
 
 * [EJS Locals](https://github.com/RandomEtc/ejs-locals)
