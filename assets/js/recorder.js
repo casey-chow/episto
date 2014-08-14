@@ -12,10 +12,13 @@
  *= require sails.io
  *= require q
  *= require wavencoder
+ *= require annyang
  */
 
 window.Recorder = (function recorder() {
+  return;
 
+  var dev = false;
 
   var my = {
 
@@ -23,8 +26,11 @@ window.Recorder = (function recorder() {
     $stopRecording: $('#recording-stop'),
     $status: $('#status'),
     $audioElement: $('#player'),
+    $recognizedText: $('#recognized-text'),
+
 
     log: console.log.bind(console),
+    verbose: dev ? console.log.bind(console) : function() {},
     error: console.error.bind(console),
     time: console.time.bind(console),
     timeEnd: console.timeEnd.bind(console),
@@ -77,6 +83,12 @@ window.Recorder = (function recorder() {
 
       my.$startRecording.click(this.onStartRecording.bind(this));
       my.$stopRecording.click(this.onStopRecording.bind(this));
+
+      annyang.addCommands({
+        '.*': function(str) {
+          my.$recognizedText.append(str);
+        }
+      });
 
       socket.on('connect', function() {
         my.status('Ready to Record');
@@ -137,6 +149,8 @@ window.Recorder = (function recorder() {
     /** Callback binding for the ending of the recording. */
     onStartRecording: function() {
       var that = this;
+
+      annyang.start();
 
       my.getUserMedia().then(function(audioStream) {
 
