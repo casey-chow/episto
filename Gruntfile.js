@@ -187,7 +187,7 @@ module.exports = function (grunt) {
   grunt.registerTask('default', [
     'install',
     'compile',
-    'watch'
+    'watch:assets'
   ]);
 
   grunt.registerTask('install', [
