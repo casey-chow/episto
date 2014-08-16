@@ -170,10 +170,10 @@ module.exports = function (grunt) {
         files: ['assets/**/*'],
         tasks: ['compile']
       },
-      spec: {
-        files: ['api/**/*', 'assets/**/*.js', 'specs/**/*'],
-        tasks: ['spec']
-      }
+      // spec: {
+      //   files: ['api/**/*', 'assets/**/*.js', 'specs/**/*'],
+      //   tasks: ['spec']
+      // }
     }
   });
 
@@ -185,9 +185,9 @@ module.exports = function (grunt) {
 
   // When Sails is lifted:
   grunt.registerTask('default', [
-    'install',
+    // 'install',
     'compile',
-    'watch:assets'
+    'watch'
   ]);
 
   grunt.registerTask('install', [

@@ -12,7 +12,6 @@
  *= require sails.io
  *= require q
  *= require wavencoder
- *= require annyang
  */
 
 window.Recorder = (function recorder() {

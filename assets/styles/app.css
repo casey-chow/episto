@@ -6,9 +6,7 @@
  *=require bootstrap
  */
 
-.record-controls {
-	margin-left: 0;
-	margin-right: 0;	
+.navbar-nav.btn-group {	
 }
 
 #status {
@@ -16,4 +14,11 @@
 	margin-bottom: 8px;
 
 	padding: 6px 12px;
+}
+
+@media (min-width: 768px) {
+	.navbar-nav.btn-group {
+		margin-right: 6px;
+		margin-left: 6px;
+	}
 }

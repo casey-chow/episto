@@ -19,6 +19,9 @@ window.Recognizer = (function recorder() {
     $status: $('#status'),
     // $audioElement: $('#player'),
     $recognizedText: $('#recognized-text'),
+    $interpretedData: $('#interpreted-data'),
+    $populate: $('#populate'),
+    $summarize: $('#summarize'),
 
 
     log: console.log.bind(console),
@@ -29,7 +32,7 @@ window.Recognizer = (function recorder() {
 
     status: function(msg) { 
       my.$status.fadeOut(function() { $(this).html(msg); }).fadeIn();
-    },
+    }
   };
 
   var Recognizer = Stapes.subclass({
@@ -61,6 +64,8 @@ window.Recognizer = (function recorder() {
 
       my.$startRecording.click(this.onStartRecording.bind(this));
       my.$stopRecording.click(this.onStopRecording.bind(this));
+      my.$populate.click(this.onPopulate.bind(this));
+      my.$summarize.click(this.getSummary.bind(this));
 
       socket.on('connect', function() {
         my.status('Ready to Record');
@@ -92,6 +97,17 @@ window.Recognizer = (function recorder() {
 
           my.$startRecording.prop('disabled', false);
           my.$stopRecording.prop('disabled', true);
+        },
+
+        'summary:request': function() {
+          my.time('Summary Request');
+          my.log('Requesting Summary');
+        },
+
+        'summary': function(msg) {
+          my.status('Summary Retrieved');
+          my.timeEnd('Summary Request');
+          my.log('Summary Contents:', msg);
         }
 
       });
@@ -124,7 +140,32 @@ window.Recognizer = (function recorder() {
     /** Callback binding for the ending of the recording. */
     onStopRecording: function() {
       my.recognition.stop();
+
+      return false;
     },
+
+    onPopulate: function() {
+      
+      $.get('/nixon.html').done(function(data) {
+        my.$recognizedText.html(data);
+      });
+
+      return false;
+    },
+
+    getSummary: function(e) {
+      var that = this;
+
+      var msg = my.$recognizedText.text();
+
+      socket.post('/recordings/summarize', { longform: msg }, function(res) {
+        console.log(res);
+        that.emit('summary', res);
+        my.$interpretedData.text(res.sm_api_content);
+      });
+
+      this.emit('summary:request');
+    }
 
   });
 

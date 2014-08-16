@@ -164,6 +164,25 @@ module.exports = {
       });
     });
 
+  },
+
+  summarize: function(req, res) {
+    var msg = req.param('longform');
+
+    execFile('curl', [
+      '-s',
+      '-X', 'POST',
+      '-H', 'Expect:',
+      '-d', 'sm_api_input=' + msg,
+      'http://api.smmry.com/&SM_API_KEY=16BDC1E286&SM_LENGTH=5'
+    ], function (err, stdout, stderr) {
+      if(err) { 
+        sails.log.error(err); 
+        res.json(err);
+      } else {
+        res.json(JSON.parse(stdout));
+      }
+    });
   }
 
 };

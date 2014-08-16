@@ -2,7 +2,6 @@
   "name": "episto",
   "private": true,
   "dependencies": {
-    "zepto": "~1.1.4",
     "lodash": "~2.4.1",
     "recordrtc": "http://cdn.WebRTC-Experiment.com/RecordRTC.js",
     "q": "https://raw.githubusercontent.com/kriskowal/q/v1/q.js",
